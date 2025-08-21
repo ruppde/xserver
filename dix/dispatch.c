@@ -985,9 +985,6 @@ ProcGetGeometry(ClientPtr client)
         return rc;
 
     xGetGeometryReply rep = {
-        .type = X_Reply,
-        .length = 0,
-        .sequenceNumber = client->sequence,
         .root = pDraw->pScreen->root->drawable.id,
         .depth = pDraw->depth,
         .width = pDraw->width,
@@ -1003,7 +1000,6 @@ ProcGetGeometry(ClientPtr client)
     }
 
     if (client->swapped) {
-        swaps(&rep.sequenceNumber);
         swapl(&rep.root);
         swaps(&rep.x);
         swaps(&rep.y);
@@ -1011,7 +1007,7 @@ ProcGetGeometry(ClientPtr client)
         swaps(&rep.height);
         swaps(&rep.borderWidth);
     }
-    WriteToClient(client, sizeof(xGetGeometryReply), &rep);
+    X_SEND_REPLY_SIMPLE(client, rep);
     return Success;
 }
 
@@ -1082,17 +1078,13 @@ ProcInternAtom(ClientPtr client)
         return BadAlloc;
 
     xInternAtomReply rep = {
-        .type = X_Reply,
-        .sequenceNumber = client->sequence,
-        .length = 0,
         .atom = atom
     };
 
     if (client->swapped) {
-        swaps(&rep.sequenceNumber);
         swapl(&rep.atom);
     }
-    WriteToClient(client, sizeof(rep), &rep);
+    X_SEND_REPLY_SIMPLE(client, rep);
     return Success;
 }
 
